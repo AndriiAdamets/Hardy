@@ -31,6 +31,7 @@ module.exports = function() {
       value = utils.toRgba(value);
     }
 
+    console.log(this);
     this.getCssProperty(elementSelector, property, function(err, measuredValue) {
       if (err) {
         if (typeof err === "object") {
@@ -69,10 +70,14 @@ module.exports = function() {
   shouldHavePropertyOfValueOrValue = function() {
     var elementName = arguments[0],
       property = arguments[1],
-      callback = arguments[arguments.length - 1],
-      values = Array.prototype.slice.call(arguments, 2, arguments.length - 1),
-      i, l, callCount;
+      callback = arguments[arguments.length - 1];
+      //values = Array.prototype.slice.call(arguments, 2, arguments.length - 1),
+      //i, l, callCount;
 
+    var values = (arguments[2] + arguments[3]).split(' or ');
+    for (var i = 0, l = values.length; i < l; ++i) {
+      values[i] = values[i].replace(/"/g, '');
+    }
 
     callCount = values.length;
 
@@ -87,10 +92,11 @@ module.exports = function() {
     }
     orCallback.fail = callback.fail;
     for (i = 0, l = values.length; i < l; i++) {
+      var value = values[i];
       shouldHavePropertyOfValue(elementName, property, value, orCallback);
     }
   };
-  this.Then(/^"([^"]*)" should have "([^"]*)" of "([^"]*)"( or "([^"]*)")+$/, shouldHavePropertyOfValueOrValue);
+  this.Then(/^"([^"]*)" should have "([^"]*)" of ((( or ){0,1}"[^"]*")+)$/, shouldHavePropertyOfValueOrValue);
 
   /* "<Then> <element> should have offset <top|left> of <value>" */
   // Calculates the exact offset of the element regardless of the specified styles
